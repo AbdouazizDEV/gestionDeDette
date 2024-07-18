@@ -25,9 +25,11 @@ class ProductController {
         }
     }
     
-   /*  public function getProducts() {
+   //getAllProducts
+    public function getAllProducts() {
         $products = $this->productModel->getAllProducts();
-        echo json_encode($products);
-    } */
+        return $products;
+    }
+
     
 }

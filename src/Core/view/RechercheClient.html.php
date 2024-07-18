@@ -119,9 +119,9 @@
                     </div>
                     <div class="flex space-x-2 mb-4">
                         <button class="bg-custom-button text-white px-4 py-2 rounded">Client</button>
-                        <button id="toggleModal" class="block text-white bg-custom-button hover:bg-custom-800 focus:ring-4 focus:outline-none focus:ring-custom-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-custom-600 dark:hover:bg-custom-700 dark:focus:ring-custom-800" type="button">
-                            Nouvelle Dette
-                        </button>
+                        <form action="/dette/create" method="post">
+                            <button class="block text-white bg-custom-button hover:bg-custom-800 focus:ring-4 focus:outline-none focus:ring-custom-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-custom-600 dark:hover:bg-custom-700 dark:focus:ring-custom-800"> Nouvelle Dette</button>
+                        </form>
                         <form action="/dette/list" method="post">
                             <button class="bg-custom-button text-white px-4 py-2 rounded">Dette</button>
                         </form>
@@ -143,7 +143,6 @@
 
             </div>
         </div>
-
 
 
 <!-- Modal principal -->
@@ -210,7 +209,7 @@
 </div>
 
 </main>
-<script>
+<!-- <script>
     document.getElementById('toggleModal').addEventListener('click', function() {
         document.getElementById('default-modal').classList.remove('hidden');
     });
@@ -228,7 +227,7 @@
         document.getElementById('default-modal').classList.add('hidden');
         // Ajoutez ici toute action à réaliser après avoir refusé les termes
     });
-</script>
+</script> -->
 <script>
 document.getElementById('searchBtn').addEventListener('click', function () {
     const phone = document.getElementById('phone').value;

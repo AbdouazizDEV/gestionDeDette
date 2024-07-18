@@ -2,15 +2,15 @@
 
 namespace Core\Model;
 
-use Core\Database\MysqlDatabase;
+//use Core\Database\MysqlDatabase;
 
 abstract class Model {
     protected $database;
     protected $table;
 
-    public function __construct() {
+    /*public function __construct() {
         $this->database = MysqlDatabase::getInstance();
-    }
+    }*/
 
     public function all() {
         $sql = "SELECT * FROM $this->table";
@@ -56,5 +56,10 @@ abstract class Model {
         $stmt = $this->database->prepare($sql);
         return $stmt->execute($data);
     }
+
+    public function setDatabase($database) {
+        $this->database = $database;
+    }
     
+    //public abstract function getEntity();
 }

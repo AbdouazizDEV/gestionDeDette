@@ -150,30 +150,68 @@ class DetteController {
         }
     }
     
-    
-
-    public function add() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id_client = $_POST['id_client'];
-            $id_prod = $_POST['id_prod'];
-            $montant = $_POST['montant'];
-            $quantite = $_POST['quantite'];
-    
-            // Calculez le montant total
-            $total = $montant * $quantite;
-    
-            // Ajoutez la dette
-            $this->detteModel->addDette($id_client, $id_prod, $total, $quantite);
-    
-            // Redirigez vers la liste des dettes ou affichez un message de succès
-            header('Location: /dette/list');
-            exit;
-        }
-    }
-
+   
     public function getProducts() {
         $products = $this->detteModel->getAllProducts();
         echo json_encode($products);
     }
     
+    //une méthode qui va utiliser le validardor pour valider les champs et enregister une Dette 
+    public function saveDette() {
+        // Instancier le modèle et le validateur
+        $validator = new Validator();
+    
+        // Récupérer les données POST
+        $id_client = $_SESSION['id_client'];
+        $product_ids = $_POST['product_ids'] ?? [];
+        $montant = isset($_POST['montant']) ? floatval($_POST['montant']) : 0;
+        $montant_verser = isset($_POST['montant_verser']) ? floatval($_POST['montant_verser']) : 0;
+        $date_emprunt = $_POST['date_emprunt'] ?? null;
+        $date_remboursement = $_POST['date_remboursement'] ?? null;
+        $montant_restant = $montant - $montant_verser;
+    
+        // Validation des champs
+        $validator->validate('montant', $montant, ['required' => true, 'numeric' => true]);
+        $validator->validate('montant_verser', $montant_verser, ['required' => true, 'numeric' => true]);
+        $validator->validate('date_emprunt', $date_emprunt, ['required' => true]);
+        $validator->validate('date_remboursement', $date_remboursement, ['required' => true]);
+    
+        // Vérifier les erreurs de validation
+        if ($validator->hasErrors()) {
+            // Gérer les erreurs (par exemple, rediriger ou afficher des messages)
+            $errors = $validator->getErrors();
+            
+            // Récupérer les informations du client pour les afficher de nouveau
+            $clientModel = new ClientModel();
+            $client = $clientModel->getClientById($id_client);
+            
+            // Par exemple, inclure le fichier de vue avec les erreurs
+            require_once ROUT.'/src/Core/view/AjouterDette.html.php';
+            return;
+        }
+    
+        // Enregistrer la dette
+        try {
+            $this->detteModel->beginTransaction();
+            
+            // Transformer les IDs de produits en chaîne de caractères séparée par des virgules
+            $product_ids_string = implode(',', $product_ids);
+            
+            // Enregistrer la nouvelle dette avec les IDs de produits
+            $id_dette = $this->detteModel->enregistrerNouvelleDette($id_client, $montant, $montant_verser, $montant_restant, $date_emprunt, $date_remboursement, $product_ids_string);
+    
+            $this->detteModel->commit();
+    
+            // Rediriger ou afficher un message de succès
+            header('Location: /dette/list');
+            exit;
+        } catch (\Exception $e) {
+            $this->detteModel->rollBack();
+            // Gérer l'erreur (afficher un message ou enregistrer l'erreur)
+            error_log($e->getMessage());
+            require_once ROUT.'/src/Core/view/AjouterDette.html.php';
+        }
+    }
+    
+
 }

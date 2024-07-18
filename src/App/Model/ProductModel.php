@@ -24,9 +24,10 @@ class ProductModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function getAllProducts() {
-        $stmt = $this->db->query("SELECT id_produit, nom FROM Produit");
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->db->query("SELECT id_produit, nom,description, prix, quantite_en_stock AS quantite FROM Produit");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     
 
 }

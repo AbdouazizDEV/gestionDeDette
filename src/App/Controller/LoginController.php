@@ -10,7 +10,7 @@ use Core\Database\MysqlDatabase;
 
 class LoginController
 {
-    private $security;
+    /*private $security;
 
     public function __construct()
     {
@@ -31,5 +31,5 @@ class LoginController
         } else {
             echo "Nom d'utilisateur ou mot de passe incorrect.";
         }
-    }
+    }*/
 }

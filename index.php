@@ -75,6 +75,13 @@ use App\Controller\ProductController;
 
 // Dans votre fichier de routes
 Route::post('/dette/produit', ['App\Controller\ProductController', 'getProductsByDetteId']);
+ROute::post('dette/create', ['App\Controller\DetteController', 'create']);
+Route::get('dette/create', ['App\Controller\DetteController', 'create']);
+
+Route::post('dette/save', ['App\Controller\DetteController', 'saveDette']);
+Route::get('dette/save', ['App\Controller\DetteController','saveDette']);
+
+
 
 // Démarrer le routage
 Route::run();

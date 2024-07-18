@@ -38,7 +38,6 @@ class MysqlDatabase {
     public function beginTransaction() {
         $this->pdo->beginTransaction();
         return $this;
-
     }
     public function commit() {
         $this->pdo->commit();
@@ -47,5 +46,8 @@ class MysqlDatabase {
     public function rollBack() {
         $this->pdo->rollBack();
         return $this;
+    }
+    public function getConnection() {
+        return $this->pdo;
     }
 }

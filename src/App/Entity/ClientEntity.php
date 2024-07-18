@@ -15,4 +15,4 @@ class ClientEntity extends Entity {
 
     // Getters et setters
 }
-?>
+

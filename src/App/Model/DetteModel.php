@@ -67,18 +67,32 @@ class DetteModel {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
     
-    public function addDette($id_client, $id_prod, $montant, $quantite) {
-        $stmt = $this->db->prepare("INSERT INTO Dette (id_client, id_prod, montant, quantite, date_emprunt) VALUES (:id_client, :id_prod, :montant, :quantite, NOW())");
-        $stmt->bindParam(':id_client', $id_client);
-        $stmt->bindParam(':id_prod', $id_prod);
-        $stmt->bindParam(':montant', $montant);
-        $stmt->bindParam(':quantite', $quantite);
-        $stmt->execute();
-    }
+  
     
     public function getAllProducts() {
         $stmt = $this->db->query("SELECT * FROM Produit");
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    
+
+
+   public function enregistrerNouvelleDette($id_client, $montant, $montant_verser, $montant_restant, $date_emprunt, $date_remboursement, $product_ids_string) {
+    $sql = "INSERT INTO Dette (id_client, montant, montant_verser, montant_restant, date_emprunt, date_remboursement, statut, TablePRD) VALUES (?, ?, ?, ?, ?, ?, 'en cours', ?)";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$id_client, $montant, $montant_verser, $montant_restant, $date_emprunt, $date_remboursement, $product_ids_string]);
+    return $this->db->lastInsertId();
+}
+ 
+
+    public function beginTransaction() {
+        $this->db->beginTransaction();
+    }
+
+    public function commit() {
+        $this->db->commit();
+    }
+
+    public function rollBack() {
+        $this->db->rollBack();
+    }
+
 }

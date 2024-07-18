@@ -15,4 +15,3 @@ abstract class Entity {
 
     // Ajouter d'autres méthodes nécessaires
 }
-?>
