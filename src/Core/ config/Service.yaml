@@ -1,3 +1,0 @@
-Service:
-  Validators:
-    class: /var/www/html/diallo_SHOP/src/App/Controller/Validator.php ;

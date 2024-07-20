@@ -4,12 +4,17 @@ namespace Core\Database;
 
 use PDO;
 use PDOException;
+use Core\Database\DatabaseInterface;
+use Symfony\Component\Yaml\Yaml;
 
-class MysqlDatabase {
+class MysqlDatabase implements DatabaseInterface  {
     private $pdo;
 
     public function __construct() {
-        $this->pdo = new PDO('mysql:host=localhost;dbname=Diallo_SHOP', 'Zulo', 'A@deldiablo10');
+        $routes = Yaml::parseFile('/var/www/html/diallo_SHOP/aziz.yaml');
+        $dsn = $routes['DSN'];$PASSWORD = $routes['DB_PASS'];$USER = $routes['DB_USER'];
+
+        $this->pdo = new PDO($dsn, $USER, $PASSWORD);
     }
 
     public function prepare($sql, $options = []) {

@@ -1,8 +1,9 @@
 <?php
 
 namespace Core;
-
-class Session {
+ 
+use Core\SessionInterface;
+class Session implements SessionInterface {
     public static function start() {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();

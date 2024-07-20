@@ -1,0 +1,65 @@
+Session: Core\Session
+Route: Core\Routes
+
+ClientModelInterface: App\Model
+DetteModelInterface: App\Model
+PaiementModelInterface: App\Model
+DatabaseInterface: Core\Database\MysqlDatabase
+
+DSN: mysql:host=localhost;port=3306;dbname=Diallo_SHOP;charset=utf8mb4
+DB_USER: Zulo
+DB_PASS: A@deldiablo10
+
+routes:
+  - method: post
+    path: clients/create
+    controller: App\Controller\ClientController
+    action: create
+  - method: get
+    path: clients/search
+    controller: App\Controller\ClientController
+    action: search
+  - method: get
+    path: clients
+    controller: App\Controller\ClientController
+    action: list
+  - method: get
+    path: clients/phone
+    controller: App\Controller\ClientController
+    action: searchByPhone
+  - method: post
+    path: dette/list
+    controller: App\Controller\DetteController
+    action: list
+  - method: get
+    path: dette/list
+    controller: App\Controller\DetteController
+    action: list
+  - method: post
+    path: dette/handlePayment
+    controller: App\Controller\DetteController
+    action: handlePayment
+  - method: get
+    path: dette/paiements/{id_dette}
+    controller: App\Controller\DetteController
+    action: listPaiements
+  - method: get
+    path: dette/view/{clientId}
+    controller: App\Controller\DetteController
+    action: viewDettes
+  - method: get
+    path: dette/list/{page}
+    controller: App\Controller\DetteController
+    action: list
+  - method: post
+    path: dette/produit
+    controller: App\Controller\ProductController
+    action: getProductsByDetteId
+  - method: post
+    path: dette/create
+    controller: App\Controller\DetteController
+    action: create
+  - method: post
+    path: dette/save
+    controller: App\Controller\DetteController
+    action: saveDette

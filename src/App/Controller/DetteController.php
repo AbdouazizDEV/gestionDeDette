@@ -15,11 +15,11 @@ class DetteController {
     private $productModel;
     private $db;
     public function __construct() {
-        $this->clientModel = new ClientModel();
-        $this->detteModel = new DetteModel();
-        $this->paiementModel = new PaiementModel();
-        $this->db = new MysqlDatabase();
-        $this->productModel = new ProductModel();
+        //$this->clientModel = new ClientModel();
+        //$this->detteModel = new DetteModel();
+        //$this->paiementModel = new PaiementModel();
+        $this->db = MysqlDatabase::getInstance();
+        //$this->productModel = new ProductModel();
     }
     public function list($page = 1) {
         $itemsPerPage = 4;
@@ -100,8 +100,6 @@ class DetteController {
         echo json_encode($products);
     }
     
-    
-    
     public function handlePayment() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_dette = $_POST['id_dette'];
@@ -150,7 +148,6 @@ class DetteController {
         }
     }
     
-   
     public function getProducts() {
         $products = $this->detteModel->getAllProducts();
         echo json_encode($products);
@@ -158,60 +155,60 @@ class DetteController {
     
     //une méthode qui va utiliser le validardor pour valider les champs et enregister une Dette 
     public function saveDette() {
-        // Instancier le modèle et le validateur
         $validator = new Validator();
+        $productModel = new ProductModel();
     
-        // Récupérer les données POST
         $id_client = $_SESSION['id_client'];
         $product_ids = $_POST['product_ids'] ?? [];
-        $montant = isset($_POST['montant']) ? floatval($_POST['montant']) : 0;
-        $montant_verser = isset($_POST['montant_verser']) ? floatval($_POST['montant_verser']) : 0;
+        $quantities = $_POST['quantities'] ?? [];
+        $montant = floatval($_POST['montant'] ?? 0);
+        $montant_verser = floatval($_POST['montant_verser'] ?? 0);
         $date_emprunt = $_POST['date_emprunt'] ?? null;
         $date_remboursement = $_POST['date_remboursement'] ?? null;
-        $montant_restant = $montant - $montant_verser;
+        $montant_restant = $montant - $montant_verser;  // Conversion en nombres
     
-        // Validation des champs
         $validator->validate('montant', $montant, ['required' => true, 'numeric' => true]);
         $validator->validate('montant_verser', $montant_verser, ['required' => true, 'numeric' => true]);
         $validator->validate('date_emprunt', $date_emprunt, ['required' => true]);
         $validator->validate('date_remboursement', $date_remboursement, ['required' => true]);
     
-        // Vérifier les erreurs de validation
         if ($validator->hasErrors()) {
-            // Gérer les erreurs (par exemple, rediriger ou afficher des messages)
             $errors = $validator->getErrors();
-            
-            // Récupérer les informations du client pour les afficher de nouveau
-            $clientModel = new ClientModel();
-            $client = $clientModel->getClientById($id_client);
-            
-            // Par exemple, inclure le fichier de vue avec les erreurs
             require_once ROUT.'/src/Core/view/AjouterDette.html.php';
             return;
         }
     
-        // Enregistrer la dette
+        foreach ($product_ids as $index => $product_id) {
+            $product = $productModel->getProductById($product_id);
+            if (!$product || $product['quantite_en_stock'] < intval($quantities[$index])) {
+                $errors['product_ids'][] = "La quantité demandée pour le produit {$product['nom']} est indisponible.";
+                require_once ROUT.'/src/Core/view/AjouterDette.html.php';
+                return;
+            }
+        }
+    
         try {
             $this->detteModel->beginTransaction();
             
-            // Transformer les IDs de produits en chaîne de caractères séparée par des virgules
             $product_ids_string = implode(',', $product_ids);
-            
-            // Enregistrer la nouvelle dette avec les IDs de produits
             $id_dette = $this->detteModel->enregistrerNouvelleDette($id_client, $montant, $montant_verser, $montant_restant, $date_emprunt, $date_remboursement, $product_ids_string);
+    
+            foreach ($product_ids as $index => $product_id) {
+                $product = $productModel->getProductById($product_id);
+                $new_quantity = intval($product['quantite_en_stock']) - intval($quantities[$index]);
+                $productModel->updateProductQuantity($product_id, $new_quantity);
+            }
     
             $this->detteModel->commit();
     
-            // Rediriger ou afficher un message de succès
             header('Location: /dette/list');
             exit;
         } catch (\Exception $e) {
             $this->detteModel->rollBack();
-            // Gérer l'erreur (afficher un message ou enregistrer l'erreur)
             error_log($e->getMessage());
             require_once ROUT.'/src/Core/view/AjouterDette.html.php';
         }
     }
     
-
+    
 }

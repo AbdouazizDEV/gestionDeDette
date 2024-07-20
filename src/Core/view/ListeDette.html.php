@@ -91,8 +91,6 @@
             </div>
         </div>
     </div>
-
-   <!-- Product Modal -->
     <!-- Product Modal -->
 <?php if (isset($products)): ?>
 <div id="productModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">

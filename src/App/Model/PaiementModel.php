@@ -3,8 +3,8 @@
 namespace App\Model;
 
 use Core\Database\MysqlDatabase;
-
-class PaiementModel {
+use App\Model\PaiementModelInterface;
+class PaiementModel implements PaiementModelInterface {
     private $db;
 
     public function __construct() {

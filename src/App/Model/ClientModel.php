@@ -4,15 +4,14 @@ namespace App\Model;
 
 use Core\Model\Model;
 use Core\Database\MysqlDatabase;
-
-class ClientModel extends Model {
+use App\Model\ClientModelInterface;
+class ClientModel extends Model implements ClientModelInterface {
     protected $table = 'Client';
     protected $db;
 
     public function __construct() {
-        $this->db = new MysqlDatabase();
+        $this->db = MysqlDatabase::getInstance();
     }
-
     public function createClient($nom, $prenom, $email, $adresse, $tel, $photo) {
         $sql = "INSERT INTO $this->table (nom, prenom, email, adresse, telephone, photo) VALUES (:nom, :prenom, :email, :adresse, :telephone, :photo)";
         $stmt = $this->db->prepare($sql);
@@ -47,4 +46,4 @@ class ClientModel extends Model {
         return $stmt->fetch();
     }
 }
-?>
+

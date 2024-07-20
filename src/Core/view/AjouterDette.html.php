@@ -92,11 +92,12 @@ $produits = $productController->getAllProducts();
             </div>
 
 
-    <div class="mt-4 p-4 bg-brown-600 rounded-lg">
-        <form method="POST" action="/dette/save" id="debtForm">
-            <input type="hidden" name="id_client" value="<?= htmlspecialchars($client['id'], ENT_QUOTES) ?>">
 
-            <div class="grid grid-cols-2 gap-4 mb-4">
+    <div class="mt-4 p-4 bg-brown-600 rounded-lg">
+       <!-- Formulaire de saisie -->
+<form method="POST" action="/dette/save" id="debtForm">
+    <input type="hidden" name="id_client" value="<?= htmlspecialchars($client['id'], ENT_QUOTES) ?>">
+
             <div>
                 <button type="button" id="mega-menu-dropdown-button" class="bg-gray-300 text-black px-4 py-2 rounded-lg">
                     Produit <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -113,56 +114,67 @@ $produits = $productController->getAllProducts();
                 </div>
             </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="montant" class="text-white">Montant total:</label>
-                        <input type="number" id="montant" name="montant" value="<?= htmlspecialchars($_POST['montant'] ?? '') ?>" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full" readonly>
-                        <span class="text-red-500"><?= $errors['montant'] ?? '' ?></span>
-                    </div>
-                    <div>
-                        <label for="montant_verser" class="text-white">Montant Versé :</label>
-                        <input type="text" id="montant_verser" name="montant_verser" value="<?= htmlspecialchars($_POST['montant_verser'] ?? '') ?>" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full">
-                        <span class="text-red-500"><?= $errors['montant_verser'] ?? '' ?></span>
-                    </div>
-                    <div>
-                        <label for="montant_restant" class="text-white">Montant restant:</label>
-                        <input type="number" id="montant_restant" name="montant_restant" value="<?= htmlspecialchars($_POST['montant_restant'] ?? '') ?>" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full" readonly>
-                    </div>
+    <!-- Champ pour les quantités des produits -->
+    <div id="quantitiesSection">
+        <?php if (!empty($_POST['product_ids'])): ?>
+            <?php foreach ($_POST['product_ids'] as $index => $product_id): ?>
+                <div>
+                    <label for="quantities[<?= $index ?>]">Quantité pour le produit <?= $product_id ?>:</label>
+                    <input type="number" name="quantities[<?= $index ?>]" value="<?= htmlspecialchars($_POST['quantities'][$index] ?? '') ?>">
                 </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="date_emprunt" class="text-white">Date d'emprunt:</label>
-                        <input type="date" id="date_emprunt" name="date_emprunt" value="<?= htmlspecialchars($_POST['date_emprunt'] ?? date('Y-m-d')) ?>" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full" readonly>
-                        <span class="text-red-500"><?= $errors['date_emprunt'] ?? '' ?></span>
-                    </div>
-                    <div>
-                        <label for="date_remboursement" class="text-white">Date de Remboursement :</label>
-                        <input type="date" id="date_remboursement" name="date_remboursement" value="<?= htmlspecialchars($_POST['date_remboursement'] ?? '') ?>" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full">
-                        <span class="text-red-500"><?= $errors['date_remboursement'] ?? '' ?></span>
-                    </div>
-                </div>
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+            <label for="montant" class="text-white">Montant total:</label>
+            <input type="number" id="montant" name="montant" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full" readonly>
+            <span class="text-red-500"><?= $errors['montant'] ?? '' ?></span>
+        </div>
+        <div>
+            <label for="montant_verser">Montant Versé :</label>
+            <input type="text" id="montant_verser" name="montant_verser" value="<?= htmlspecialchars($_POST['montant_verser'] ?? '') ?>">
+            <span><?= $errors['montant_verser'] ?? '' ?></span>
+        </div>
+        <div>
+            <label for="montant_restant" class="text-white">Montant restant:</label>
+            <input type="number" id="montant_restant" name="montant_restant" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full" readonly>
+        </div>
+    </div>
 
-                <table id="productTable" class="w-full bg-gray-100 text-black mt-4">
-                    <thead>
-                        <tr>
-                            <th class="border p-2">Nom</th>
-                            <th class="border p-2">Description</th>
-                            <th class="border p-2">Prix</th>
-                            <th class="border p-2">Quantité</th>
-                            <th class="border p-2">nombre</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Les produits ajoutés seront affichés ici -->
-                    </tbody>
-                </table>
-                <br>
-                <div class="flex justify-end">
-                    <button type="submit" id="addProductBtn" class="bg-gray-300 text-black px-4 py-2 rounded-lg">Ajouter Dette</button>
-                </div>
-            </div>
-        </form>
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+            <label for="date_emprunt" class="text-white">Date d'emprunt:</label>
+            <input type="date" id="date_emprunt" name="date_emprunt" value="<?= date('Y-m-d') ?>" class="bg-gray-200 border border-gray-300 rounded-lg text-black p-1 w-full" readonly>
+        </div>
+        <div>
+            <label for="date_remboursement">Date de Remboursement :</label>
+            <input type="date" id="date_remboursement" name="date_remboursement" value="<?= htmlspecialchars($_POST['date_remboursement'] ?? '') ?>">
+            <span><?= $errors['date_remboursement'] ?? '' ?></span>
+        </div>
+    </div>
+
+    <table id="productTable" class="w-full bg-gray-100 text-black mt-4">
+        <thead>
+            <tr>
+                <th class="border p-2">Nom</th>
+                <th class="border p-2">Description</th>
+                <th class="border p-2">Prix</th>
+                <th class="border p-2">Quantité</th>
+                <th class="border p-2">nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les produits ajoutés seront affichés ici -->
+        </tbody>
+    </table>
+    <br>
+    <div class="flex justify-end">
+        <button type="submit" id="addProductBtn" class="bg-gray-300 text-black px-4 py-2 rounded-lg">Ajouter Dette</button>
+    </div>
+</form>
+
     </div>
 </div>
 

@@ -2,8 +2,8 @@
 namespace App\Model;
 
 use Core\Database\MysqlDatabase;
-
-class DetteModel {
+use App\Model\DetteModelInterface;
+class DetteModel implements DetteModelInterface  {
     private $db;
 
     public function __construct() {
@@ -81,8 +81,9 @@ class DetteModel {
     $stmt->execute([$id_client, $montant, $montant_verser, $montant_restant, $date_emprunt, $date_remboursement, $product_ids_string]);
     return $this->db->lastInsertId();
 }
- 
 
+
+ 
     public function beginTransaction() {
         $this->db->beginTransaction();
     }
